@@ -1,6 +1,9 @@
 #include <sil/sil.hpp>
+#include "random.hpp"
 #include <iostream>
 #include <math.h>
+#include <cmath>
+#include <complex>
 
 sil::Image image{"images/logo.png"};
 // EXO1
@@ -215,6 +218,44 @@ sil::Image image{"images/logo.png"};
     image.save("output/pouet.png");
 }*/
 
+/*void rosace()
+{
+    sil::Image image{500, 500};
+    double pi = 3.141592653589793;
+    int thickness = 1000;
+
+    // TODO: modifier l'image
+
+    for (int x{0}; x < image.width(); x++)
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            if (((y - 250) * (y - 250) + (x - 250) * (x - 250) <= 10000) && ((y - 250) * (y - 250) + (x - 250) * (x - 250) > 10000 - thickness))
+            {
+                image.pixel(x, y).r = 1.f;
+                image.pixel(x, y).g = 1.f;
+                image.pixel(x, y).b = 1.f;
+            }
+        }
+    }
+
+    for (int a{0}; a <= 6; a++)
+        for (int x{0}; x < image.width(); x++)
+        {
+            for (int y{0}; y < image.height(); y++)
+            {
+                if (((y - 250 - (100 * std::sin(a * pi / 3))) * (y - 250 - (100 * std::sin(a * pi / 3))) + (x - 250 - (100 * std::cos(a * pi / 3))) * (x - 250 - (100 * std::cos(a * pi / 3))) <= 10000) && ((y - 250 - (100 * std::sin(a * pi / 3))) * (y - 250 - (100 * std::sin(a * pi / 3))) + (x - 250 - (100 * std::cos(a * pi / 3))) * (x - 250 - (100 * std::cos(a * pi / 3))) > 10000 - thickness))
+                {
+                    image.pixel(x, y).r = 1.f;
+                    image.pixel(x, y).g = 1.f;
+                    image.pixel(x, y).b = 1.f;
+                }
+            }
+        }
+
+    image.save("output/rosace.png");
+}*/
+
 /*void mosaique()
 {
     sil::Image image{"images/logo.png"};
@@ -237,28 +278,154 @@ sil::Image image{"images/logo.png"};
     image2.save("output/pouet.png");
 }*/
 
-void mosaiqueMirror()
+/*void mosaiqueMirror()
 {
-    sil::Image image{"images/logo.png"};
-    sil::Image image2{1500, 1725};
 
-    for (int x2{0}; x2 < image2.width(); x2 += 300)
+    int nbrepeat{5};
+    sil::Image image{"images/logo.png"};
+    sil::Image imageIncrement{image.width() * nbrepeat, image.height() * nbrepeat};
+
+    for (int x{0}; x < imageIncrement.width(); x++)
     {
-        for (int y2{0}; y2 < image2.height(); y2 += 345)
+        for (int y{0}; y < imageIncrement.height(); y++)
         {
-            for (int x1{x2}; x1 < image.width() + x2; x1++)
+            int iX{x / image.width()};
+            int iY{y / image.height()};
+
+            if (iX % 2 == 0)
             {
-                for (int y1{y2}; y1 < image.height() + y2; y1++)
+                if (iY % 2 == 0)
                 {
-                    image2.pixel(x1, y1) = image.pixel(image.width() - 1 - (x1 - x2), y1 - y2);
-                    
+                    imageIncrement.pixel(x, y) = image.pixel(x % image.width(), y % image.height());
+                }else
+                {
+                    imageIncrement.pixel(x, y) = image.pixel(x % image.width(), image.height() - 1 - (y % image.height()));
                 }
+            }else{
+                if (iY % 2 == 0)
+                {
+                    imageIncrement.pixel(x, y) = image.pixel(image.width() - 1 - (x % image.width()), y % image.height());
+                }
+                else
+                {
+                    imageIncrement.pixel(x, y) = image.pixel(image.width() - 1 - (x % image.width()), image.height() - 1 - (y % image.height()));
+                }
+            }
+
+        }
+    }
+    imageIncrement.save("output/pouet.png");
+    imageIncrement.save("output/mosaiqueMirror.png");
+}*/
+
+/*void glitch()
+{
+    set_random_seed(500);
+    sil::Image image{"images/logo.png"};
+
+    int max_x{38};
+    int max_y{8};
+
+    int iteration_glitch{59};
+
+    for (int i = 0; i < iteration_glitch; i++)
+    {
+        int rand_start_x{random_int(0, image.width() - (1 + max_x))};
+        int rand_end_x{random_int(rand_start_x, rand_start_x + max_x)};
+        int rand_start_y{random_int(0, image.height() - (1 + max_y))};
+        int rand_end_y{random_int(rand_start_y, rand_start_y + max_y)};
+
+        int rand_offset_x{random_int(0, image.width())};
+        int rand_offset_y{random_int(0, image.height())};
+
+        for (int x{rand_start_x}; x <= rand_end_x; x++)
+        {
+            for (int y{rand_start_y}; y <= rand_end_y; y++)
+            {
+                std::swap(image.pixel(x, y), image.pixel((x + rand_offset_x) % image.width(), (y + rand_offset_y) % image.height()));
             }
         }
     }
 
-    image2.save("output/pouet.png");
-}
+    image.save("output/pouet.png");
+    //image.save("output/glitch8.png");
+}*/
+
+/*void colorDegrade(){
+    sil::Image image{300, 200};
+
+    for (int x{0}; x < image.width(); ++x) {
+        // Calculer le facteur d'interpolation t
+        float t = x / static_cast<float>(image.width() - 1);
+        glm::vec3 red(1.0f, 0.0f, 0.0f);
+        glm::vec3 green(0.0f, 1.0f, 0.0f);
+
+        // Interpoler entre rouge et vert
+        glm::vec3 color = glm::mix(red, green, t);
+
+        for (int y{0}; y < image.height(); ++y) {
+            image.pixel(x, y).r = color.r; // Assigner le rouge
+            image.pixel(x, y).g = color.g; // Assigner le vert
+            image.pixel(x, y).b = color.b; // Assigner le bleu (0 ici)
+        }
+    }
+
+    image.save("output/pouet.png");
+    //image.save("output/colorDegrade.png");
+}*/
+
+/*void Fractale()
+{
+    sil::Image image{500, 500};
+    
+    int x1 {};
+    int y1 {};
+    double x2 {};
+    double y2 {};
+    
+    for (double x{0}; x < 4; x += 4.0 / 500) 
+    {
+        for (double y{0}; y < 4; y += 4.0 / 500) 
+        {
+            int x1 = static_cast<int>(x * (500.0 / 4.0));
+            int y1 = static_cast<int>(y * (500.0 / 4.0));
+
+            std::complex<double> z1 {0.0, 0.0};
+            std::complex<double> c {x - 2, y - 2};
+            int compte {};
+
+            for (int a{0}; a < 500; a++)
+            {
+                z1 = z1 * z1 + c;
+                compte += 1;  
+                
+                if (std::abs(z1) > 2)
+                {
+                    double value = static_cast<double>(a) / static_cast<double>(50);
+                    
+                    image.pixel(x1, y1).r = value;
+                    image.pixel(x1, y1).g = value;
+                    image.pixel(x1, y1).b = value;
+                    break;
+                } 
+            }
+            
+            // Si on atteint le maximum d'itérations sans divergence
+            if (compte == 500) 
+            {
+                image.pixel(x1, y1).r = 1.f;
+                image.pixel(x1, y1).g = 1.f;
+                image.pixel(x1, y1).b = 1.f;
+            }
+        }
+    }
+
+    image.save("output/pouet.png");
+    image.save("output/fractale.png");
+}*/
+
+
+
 
 int main()
 {
@@ -318,9 +485,25 @@ int main()
         mosaique();
         sil::Image image{"output/pouet.png"};
     }*/
-    {
+    /*{
+        rosace();
+        sil::Image image{"output/pouet.png"};
+    }*/
+    /*{
         mosaiqueMirror();
         sil::Image image{"output/pouet.png"};
-    }
-    return 0;
+    }*/
+    /*{
+        glitch();
+        sil::Image image{"output/pouet.png"};
+    }*/
+    /*{
+        colorDegrade();
+        sil::Image image{"output/pouet.png"};
+    }*/
+    /*{
+        Fractale();
+        sil::Image image{"output/pouet.png"};
+    }*/
+   
 }
