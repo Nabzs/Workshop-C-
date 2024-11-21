@@ -4,6 +4,9 @@
 #include <math.h>
 #include <cmath>
 #include <complex>
+#include <algorithm>
+#include <vector>
+#include <glm/gtx/matrix_transform_2d.hpp>
 
 sil::Image image{"images/logo.png"};
 // EXO1
@@ -131,28 +134,30 @@ sil::Image image{"images/logo.png"};
 }*/
 
 // EXO9
-/*int RGBsplit()
+void RGBsplit()
 {
     sil::Image image{"images/logo.png"};
-    sil::Image image1{"images/logo-copie.png"};
-
-    for (int x{0}; x < image.width(); ++x)
+    sil::Image new_image{image.width(), image.height()};
+    for (int x{0}; x < image.width(); x++)
     {
-        for (int y{0}; y < image.height(); ++y)
+        for (int y{0}; y < image.height(); y++)
         {
-
+            new_image.pixel(x, y).g = image.pixel(x, y).g;
+            // On gère le rouge
+            if (x - 30 >= 0)
+            {
+                new_image.pixel(x, y).r = image.pixel(x - 30, y).r;
+            }
+            // On gère le bleu
+            if (x + 30 < image.width())
+            {
+                new_image.pixel(x, y).b = image.pixel(x + 30, y).b;
+            }
         }
-
-        image1.save("output/pouet.png");
-        return 0;
     }
-
-
-    A FINIR !!!!!!!!!!!!!!!!!!!!!!
-    A FINIR !!!!!!!!!!!!!!!!!!!!!!
-    A FINIR !!!!!!!!!!!!!!!!!!!!!!
-
-};*/
+    new_image.save("output/pouet.png");
+    new_image.save("output/rgbSplit.png");
+}
 
 // EXO10
 /*void bright()
@@ -199,7 +204,6 @@ sil::Image image{"images/logo.png"};
 
 /*void circle()
 {
-
     sil::Image image{500, 500};
     int thickness = 1000;
 
@@ -218,8 +222,7 @@ sil::Image image{"images/logo.png"};
     image.save("output/pouet.png");
 }*/
 
-/*void rosace()
-{
+/*void rosace(){
     sil::Image image{500, 500};
     double pi = 3.141592653589793;
     int thickness = 1000;
@@ -256,8 +259,7 @@ sil::Image image{"images/logo.png"};
     image.save("output/rosace.png");
 }*/
 
-/*void mosaique()
-{
+/*void mosaique(){
     sil::Image image{"images/logo.png"};
     sil::Image image2{1500, 1725};
 
@@ -274,13 +276,10 @@ sil::Image image{"images/logo.png"};
             }
         }
     }
-
     image2.save("output/pouet.png");
 }*/
 
-/*void mosaiqueMirror()
-{
-
+/*void mosaiqueMirror(){
     int nbrepeat{5};
     sil::Image image{"images/logo.png"};
     sil::Image imageIncrement{image.width() * nbrepeat, image.height() * nbrepeat};
@@ -318,15 +317,14 @@ sil::Image image{"images/logo.png"};
     imageIncrement.save("output/mosaiqueMirror.png");
 }*/
 
-/*void glitch()
-{
-    set_random_seed(500);
-    sil::Image image{"images/logo.png"};
+/*void glitch(){
+    set_random_seed(5);
+    sil::Image image{"images/blackops.jpg"};
 
-    int max_x{38};
-    int max_y{8};
+    int max_x{250};
+    int max_y{35};
 
-    int iteration_glitch{59};
+    int iteration_glitch{50};
 
     for (int i = 0; i < iteration_glitch; i++)
     {
@@ -348,7 +346,7 @@ sil::Image image{"images/logo.png"};
     }
 
     image.save("output/pouet.png");
-    //image.save("output/glitch8.png");
+    image.save("output/BO6/glitch8.png");
 }*/
 
 /*void colorDegrade(){
@@ -377,15 +375,15 @@ sil::Image image{"images/logo.png"};
 /*void Fractale()
 {
     sil::Image image{500, 500};
-    
+
     int x1 {};
     int y1 {};
     double x2 {};
     double y2 {};
-    
-    for (double x{0}; x < 4; x += 4.0 / 500) 
+
+    for (double x{0}; x < 4; x += 4.0 / 500)
     {
-        for (double y{0}; y < 4; y += 4.0 / 500) 
+        for (double y{0}; y < 4; y += 4.0 / 500)
         {
             int x1 = static_cast<int>(x * (500.0 / 4.0));
             int y1 = static_cast<int>(y * (500.0 / 4.0));
@@ -397,21 +395,21 @@ sil::Image image{"images/logo.png"};
             for (int a{0}; a < 500; a++)
             {
                 z1 = z1 * z1 + c;
-                compte += 1;  
-                
+                compte += 1;
+
                 if (std::abs(z1) > 2)
                 {
                     double value = static_cast<double>(a) / static_cast<double>(50);
-                    
+
                     image.pixel(x1, y1).r = value;
                     image.pixel(x1, y1).g = value;
                     image.pixel(x1, y1).b = value;
                     break;
-                } 
+                }
             }
-            
+
             // Si on atteint le maximum d'itérations sans divergence
-            if (compte == 500) 
+            if (compte == 500)
             {
                 image.pixel(x1, y1).r = 1.f;
                 image.pixel(x1, y1).g = 1.f;
@@ -424,8 +422,145 @@ sil::Image image{"images/logo.png"};
     image.save("output/fractale.png");
 }*/
 
+/*glm::vec2 rotated(glm::vec2 point, glm::vec2 center_of_rotation, float angle)
+{
+    return glm::vec2{glm::rotate(glm::mat3{1.f}, angle) * glm::vec3{point - center_of_rotation, 0.f}} + center_of_rotation;
+}
+void Vortex()
+{
+    double pi{3.14159265358979323846};
 
+    sil::Image image{"images/logo.png"};
+    int width{image.width()};
+    int height{image.height()};
 
+    sil::Image imageOut{width, height};
+
+    // glm::vec2 centre {0, 0};
+    glm::vec2 centre{(width / 2) - 1, (height / 2) - 1};
+
+    for (int x{0}; x < width; x++)
+    {
+        for (int y{0}; y < height; y++)
+        {
+            int distance_origine{static_cast<int>(sqrt((x - centre.x) * (x - centre.x) + (y - centre.y) * (y - centre.y)))};
+            double angle{distance_origine * pi / 30};
+            glm::vec2 new_coord{rotated(glm::vec2{x, y}, centre, angle)};
+            new_coord.x = glm::round(new_coord.x);
+            new_coord.y = glm::round(new_coord.y);
+            if (new_coord.x >= 0 && new_coord.x <= width - 1 && new_coord.y >= 0 && new_coord.y <= height - 1)
+            {
+                imageOut.pixel(x, y) = image.pixel(new_coord.x, new_coord.y);
+            }
+        }
+    }
+
+    imageOut.save("output/pouet.png");
+    imageOut.save("output/vortex.png");
+}*/
+
+/*void Tramage()
+{
+    sil::Image image{"images/photo.jpg"};
+
+    for (int x{0}; x < image.width(); x++)
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            // On calcule la probabilité d'un pixel à être coloré en blanc en fonction de sa luminosité
+            float white_proba = (image.pixel(x, y).r + image.pixel(x, y).g + image.pixel(x, y).b) / 3.f;
+            if (random_float(0.f, 1.f) < white_proba)
+            {
+                image.pixel(x, y) = glm::vec3{1};
+            }
+            else
+            {
+                image.pixel(x, y) = glm::vec3{0};
+            }
+        }
+    }
+    image.save("output/pouet.png");
+}*/
+
+/*void betterContrast()
+{
+    sil::Image image{"images/photo_faible_contraste.jpg"};
+    float min{1.f}; // Plus petite luminosité
+    float max{0.f}; // Plus grande luminosité
+
+    for (int x{0}; x < image.width(); x++)
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            // On cherche le pixel avec le moins de lumière
+            if ((image.pixel(x, y).r + image.pixel(x, y).g + image.pixel(x, y).b) / 3.f < min)
+            {
+                min = (image.pixel(x, y).r + image.pixel(x, y).g + image.pixel(x, y).b) / 3.f;
+            }
+            // On cherche le pixel avec le plus de lumière
+            if ((image.pixel(x, y).r + image.pixel(x, y).g + image.pixel(x, y).b) / 3.f > max)
+            {
+                max = (image.pixel(x, y).r + image.pixel(x, y).g + image.pixel(x, y).b) / 3.f;
+            }
+        }
+    }
+
+    for (int x{0}; x < image.width(); x++)
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            image.pixel(x, y).r -= min;
+            image.pixel(x, y).g -= min;
+            image.pixel(x, y).b -= min;
+
+            image.pixel(x, y).r *= 1.f / max;
+            image.pixel(x, y).g *= 1.f / max;
+            image.pixel(x, y).b *= 1.f / max;
+        }
+    }
+    image.save("output/pouet.png");
+    image.save("output/betterContrast.jpg");
+}*/
+
+/*void blur()
+{
+    // On crée une nouvelle image avec la même taille que l'image d'entrée
+    sil::Image new_image{image.width(), image.height()};
+    int level{10}; // Niveau de flou
+
+    // On parcourt tous les pixels de notre image
+    for (int x{0}; x < image.width(); x++)
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            glm::vec3 sum{0.f};
+            int size{level};
+            // On parcourt tous les pixels de notre matrice de flou
+            for (int x_offset{-size}; x_offset < size; x_offset++)
+            {
+                for (int y_offset{-size}; y_offset < size; y_offset++)
+                {
+                    int real_x_offset{x_offset};
+                    int real_y_offset{y_offset};
+                    if (x + real_x_offset < 0 || x + real_x_offset >= image.width())
+                    {
+                        real_x_offset = 0;
+                    }
+                    if (y + real_y_offset < 0 || y + real_y_offset >= image.height())
+                    {
+                        real_y_offset = 0;
+                    }
+                    sum += image.pixel(x + real_x_offset, y + real_y_offset);
+                }
+            }
+            // On calcule et on applique la couleur trouvée au pixel de l'image parcouru
+            sum /= pow(2 * size + 1, 2);
+            new_image.pixel(x, y) = sum;
+        }
+    }
+    new_image.save("output/pouet.png");
+    new_image.save("output/blur.png");
+}*/
 
 int main()
 {
@@ -505,5 +640,25 @@ int main()
         Fractale();
         sil::Image image{"output/pouet.png"};
     }*/
-   
+    /*{
+        Tramage();
+        sil::Image image{"output/pouet.png"};
+    }*/
+    /*{
+        Vortex();
+        sil::Image image{"output/pouet.png"};
+    }*/
+    /*{
+        Tramage();
+        sil::Image image{"output/pouet.png"};
+    }*/
+    /*{
+        betterContrast();
+        sil::Image image{"output/pouet.png"};
+    }*/
+    /*{
+        blur();
+        sil::Image image{"output/pouet.png"};
+    }*/
+    return 0;
 }
