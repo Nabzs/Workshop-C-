@@ -7,7 +7,11 @@
 #include <algorithm>
 #include <vector>
 #include <glm/gtx/matrix_transform_2d.hpp>
-
+#include <map>
+#include <limits>
+#include <vector>
+#include <random>
+#include <cmath>
 sil::Image image{"images/logo.png"};
 // EXO1
 /*int green()
@@ -134,7 +138,7 @@ sil::Image image{"images/logo.png"};
 }*/
 
 // EXO9
-void RGBsplit()
+/*void RGBsplit()
 {
     sil::Image image{"images/logo.png"};
     sil::Image new_image{image.width(), image.height()};
@@ -157,7 +161,7 @@ void RGBsplit()
     }
     new_image.save("output/pouet.png");
     new_image.save("output/rgbSplit.png");
-}
+}*/
 
 // EXO10
 /*void bright()
@@ -562,6 +566,96 @@ void Vortex()
     new_image.save("output/blur.png");
 }*/
 
+
+
+void kMeans()
+{
+    // Get image dimensions
+    sil::Image image{"images/photo.jpg"};
+    int width = image.width();
+    int height = image.height();
+    int k = 16; // Définit le nombre de clusters
+
+    // Initialize centroids
+    std::vector<glm::vec3> centroids(k);
+    for (int i = 0; i < k; i++)
+    {
+        centroids[i] = image.pixel(random_int(0, width - 1), random_int(0, height - 1));
+    }
+
+    // Iterate until convergence
+    bool converged = false;
+    while (!converged)
+    {
+        // Assign pixels to clusters
+        std::vector<std::vector<glm::vec3>> clusters(k);
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                glm::vec3 pixel = image.pixel(x, y);
+                int closestCentroid = 0;
+                float minDistance = glm::distance(pixel, centroids[0]);
+                for (int i = 1; i < k; i++)
+                {
+                    float distance = glm::distance(pixel, centroids[i]);
+                    if (distance < minDistance)
+                    {
+                        closestCentroid = i;
+                        minDistance = distance;
+                    }
+                }
+                clusters[closestCentroid].push_back(pixel);
+            }
+        }
+
+        // Update centroids
+        converged = true;
+        for (int i = 0; i < k; i++)
+        {
+            if (!clusters[i].empty()) {
+                glm::vec3 sum(0.f);
+                for (const glm::vec3 &pixel : clusters[i])
+                {
+                    sum += pixel;
+                }
+                glm::vec3 newCentroid = sum / static_cast<float>(clusters[i].size());
+                if (newCentroid != centroids[i])
+                {
+                    centroids[i] = newCentroid;
+                    converged = false;
+                }
+            }
+        }
+    }
+
+    // Assign new colors to pixels
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            glm::vec3 pixel = image.pixel(x, y);
+            int closestCentroid = 0;
+            float minDistance = glm::distance(pixel, centroids[0]);
+            for (int i = 1; i < k; i++)
+            {
+                float distance = glm::distance(pixel, centroids[i]);
+                if (distance < minDistance)
+                {
+                    closestCentroid = i;
+                    minDistance = distance;
+                }
+            }
+            image.pixel(x, y) = centroids[closestCentroid]; // Vérifier que cette ligne est correcte
+        }
+    }
+
+    image.save("output/pouet.png");
+    image.save("output/kmeans.jpg");
+}
+
+
+
 int main()
 {
     /*{
@@ -658,6 +752,18 @@ int main()
     }*/
     /*{
         blur();
+        sil::Image image{"output/pouet.png"};
+    }*/
+    {
+        kMeans();
+        sil::Image image{"output/pouet.png"};
+    }
+    /*{
+        kuwahara();
+        sil::Image image{"output/pouet.png"};
+    }*/
+    /*{
+        heightMap();
         sil::Image image{"output/pouet.png"};
     }*/
     return 0;
