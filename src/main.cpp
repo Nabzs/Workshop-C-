@@ -762,13 +762,296 @@ void calculSecteur(sil::Image &image, std::vector<std::array<glm::vec3, 2>> &tab
     table.push_back({moyenne, varianceSecteur(image, sector, x, y, moyenne)});
 }*/
 
+/*void DiamondSquare() //Sans couleur
+{
+    const int size = 1025; // Must be 2^n + 1
+    sil::Image image{size, size};
+
+    // Initialize the corners
+    float roughness = 0.5f;
+    image.pixel(0, 0) = glm::vec3(random_float(0.f, 1.f));
+    image.pixel(0, size - 1) = glm::vec3(random_float(0.f, 1.f));
+    image.pixel(size - 1, 0) = glm::vec3(random_float(0.f, 1.f));
+    image.pixel(size - 1, size - 1) = glm::vec3(random_float(0.f, 1.f));
+
+    for (int sideLength = size - 1; sideLength >= 2; sideLength /= 2, roughness /= 2.0f)
+    {
+        int halfSide = sideLength / 2;
+
+        // Square step
+        for (int x = halfSide; x < size; x += sideLength)
+        {
+            for (int y = halfSide; y < size; y += sideLength)
+            {
+                float avg = (image.pixel(x - halfSide, y - halfSide).r +
+                             image.pixel(x - halfSide, y + halfSide).r +
+                             image.pixel(x + halfSide, y - halfSide).r +
+                             image.pixel(x + halfSide, y + halfSide).r) /
+                            4.0f;
+                image.pixel(x, y) = glm::vec3(avg + random_float(-roughness, roughness));
+            }
+        }
+
+        for (int x = 0; x < size; x += halfSide)
+        {
+            for (int y = (x + halfSide) % sideLength; y < size; y += sideLength)
+            {
+                float avg = 0.0f;
+                int count = 0;
+
+                if (x >= halfSide)
+                {
+                    avg += image.pixel(x - halfSide, y).r;
+                    count++;
+                }
+                if (x + halfSide < size)
+                {
+                    avg += image.pixel(x + halfSide, y).r;
+                    count++;
+                }
+                if (y >= halfSide)
+                {
+                    avg += image.pixel(x, y - halfSide).r;
+                    count++;
+                }
+                if (y + halfSide < size)
+                {
+                    avg += image.pixel(x, y + halfSide).r;
+                    count++;
+                }
+                avg /= static_cast<float>(count);
+                image.pixel(x, y) = glm::vec3(avg + random_float(-roughness, roughness));
+            }
+        }
+    }
+    float minVal = 1.0f, maxVal = 0.0f;
 
 
-void DiamondSquare(){
-    
+    for (int x = 0; x < size; x++)
+    {
+        for (int y = 0; y < size; y++)
+        {
+            minVal = std::min(minVal, image.pixel(x, y).r);
+            maxVal = std::max(maxVal, image.pixel(x, y).r);
+        }
+    }
+    for (int x = 0; x < size; x++)
+    {
+        for (int y = 0; y < size; y++)
+        {
+            float normalizedVal = (image.pixel(x, y).r - minVal) / (maxVal - minVal);
+            image.pixel(x, y) = glm::vec3(normalizedVal);
+        }
+    }
+    image.save("output/pouet.png");
+    image.save("output/DiamondSquare.png");
+}*/
+/*void DiamondSquareColor()
+{
 
+    const int size = 2049; // Must be 2^n + 1
+    sil::Image image{size, size};
+
+    // Initialize the corners
+    float roughness = 0.5f;
+    image.pixel(0, 0) = glm::vec3(random_float(0.f, 1.f));
+    image.pixel(0, size - 1) = glm::vec3(random_float(0.f, 1.f));
+    image.pixel(size - 1, 0) = glm::vec3(random_float(0.f, 1.f));
+    image.pixel(size - 1, size - 1) = glm::vec3(random_float(0.f, 1.f));
+
+    for (int sideLength = size - 1; sideLength >= 2; sideLength /= 2, roughness /= 2.0f)
+    {
+        int halfSide = sideLength / 2;
+
+        // Square step
+        for (int x = halfSide; x < size; x += sideLength)
+        {
+            for (int y = halfSide; y < size; y += sideLength)
+            {
+                float avg = (image.pixel(x - halfSide, y - halfSide).r +
+                             image.pixel(x - halfSide, y + halfSide).r +
+                             image.pixel(x + halfSide, y - halfSide).r +
+                             image.pixel(x + halfSide, y + halfSide).r) /
+                            4.0f;
+                image.pixel(x, y) = glm::vec3(avg + random_float(-roughness, roughness));
+            }
+        }
+
+        for (int x = 0; x < size; x += halfSide)
+        {
+            for (int y = (x + halfSide) % sideLength; y < size; y += sideLength)
+            {
+                float avg = 0.0f;
+                int count = 0;
+
+                if (x >= halfSide)
+                {
+                    avg += image.pixel(x - halfSide, y).r;
+                    count++;
+                }
+                if (x + halfSide < size)
+                {
+                    avg += image.pixel(x + halfSide, y).r;
+                    count++;
+                }
+                if (y >= halfSide)
+                {
+                    avg += image.pixel(x, y - halfSide).r;
+                    count++;
+                }
+                if (y + halfSide < size)
+                {
+                    avg += image.pixel(x, y + halfSide).r;
+                    count++;
+                }
+                avg /= static_cast<float>(count);
+                image.pixel(x, y) = glm::vec3(avg + random_float(-roughness, roughness));
+            }
+        }
+    }
+    float minVal = 1.0f, maxVal = 0.0f;
+
+    // Après avoir normalisé les valeurs, appliquons le dégradé de couleur
+    for (int x = 0; x < size; x++)
+    {
+        for (int y = 0; y < size; y++)
+        {
+            float height = image.pixel(x, y).r;
+
+            glm::vec3 color;
+            if (height < 0.2f) // Eau profonde
+                color = glm::mix(glm::vec3(0, 0, 0.5f), glm::vec3(0, 0, 1), height / 0.2f);
+            else if (height < 0.4f) // Eau peu profonde
+                color = glm::mix(glm::vec3(0, 0, 1), glm::vec3(0, 0.8f, 1), (height - 0.2f) / 0.2f);
+            else if (height < 0.5f) // Plage
+                color = glm::mix(glm::vec3(0, 0.8f, 1), glm::vec3(1, 1, 0), (height - 0.4f) / 0.1f);
+            else if (height < 0.7f) // Plaines
+                color = glm::mix(glm::vec3(0, 0.8f, 0), glm::vec3(0, 0.5f, 0), (height - 0.5f) / 0.2f);
+            else if (height < 0.9f) // Montagnes
+                color = glm::mix(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.7f, 0.7f, 0.7f), (height - 0.7f) / 0.2f);
+            else // Sommets enneigés
+                color = glm::mix(glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1, 1, 1), (height - 0.9f) / 0.1f);
+
+            image.pixel(x, y) = color;
+        }
+    }
+
+    image.save("output/pouet.png");
+    //image.save("output/DiamondSquareColored.png");
+}*/
+
+void DiamondSquareColorRandom()
+{
+    // Set a random seed based on current time
+    set_random_seed(static_cast<int>(std::time(nullptr)));
+
+    int n = random_int(2, 20);
+    const int size = (1 << n) + 1;
+
+    sil::Image image{size, size};
+
+    // Initialize the corners
+    float roughness = 0.5f;
+    image.pixel(0, 0) = glm::vec3(random_float(0.f, 1.f));
+    image.pixel(0, size - 1) = glm::vec3(random_float(0.f, 1.f));
+    image.pixel(size - 1, 0) = glm::vec3(random_float(0.f, 1.f));
+    image.pixel(size - 1, size - 1) = glm::vec3(random_float(0.f, 1.f));
+
+    for (int sideLength = size - 1; sideLength >= 2; sideLength /= 2, roughness /= 2.0f)
+    {
+        int halfSide = sideLength / 2;
+
+        // Square step
+        for (int x = halfSide; x < size; x += sideLength)
+        {
+            for (int y = halfSide; y < size; y += sideLength)
+            {
+                float avg = (image.pixel(x - halfSide, y - halfSide).r +
+                             image.pixel(x - halfSide, y + halfSide).r +
+                             image.pixel(x + halfSide, y - halfSide).r +
+                             image.pixel(x + halfSide, y + halfSide).r) /
+                            4.0f;
+                image.pixel(x, y) = glm::vec3(avg + random_float(-roughness, roughness));
+            }
+        }
+
+        // Diamond step
+        for (int x = 0; x < size; x += halfSide)
+        {
+            for (int y = (x + halfSide) % sideLength; y < size; y += sideLength)
+            {
+                float avg = 0.0f;
+                int count = 0;
+
+                if (x >= halfSide)
+                {
+                    avg += image.pixel(x - halfSide, y).r;
+                    count++;
+                }
+                if (x + halfSide < size)
+                {
+                    avg += image.pixel(x + halfSide, y).r;
+                    count++;
+                }
+                if (y >= halfSide)
+                {
+                    avg += image.pixel(x, y - halfSide).r;
+                    count++;
+                }
+                if (y + halfSide < size)
+                {
+                    avg += image.pixel(x, y + halfSide).r;
+                    count++;
+                }
+
+                avg /= static_cast<float>(count);
+                image.pixel(x, y) = glm::vec3(avg + random_float(-roughness, roughness));
+            }
+        }
+    }
+
+    // Normalize and apply color gradient
+    float minVal = 1.0f, maxVal = 0.0f;
+    for (int x = 0; x < size; x++)
+    {
+        for (int y = 0; y < size; y++)
+        {
+            minVal = std::min(minVal, image.pixel(x, y).r);
+            maxVal = std::max(maxVal, image.pixel(x, y).r);
+        }
+    }
+
+    for (int x = 0; x < size; x++)
+    {
+        for (int y = 0; y < size; y++)
+        {
+            float height = (image.pixel(x, y).r - minVal) / (maxVal - minVal);
+
+            glm::vec3 color;
+            if (height < 0.1f) // Eau profonde
+                color = glm::mix(glm::vec3(0, 0, 0.6f), glm::vec3(0, 0, 1), height / 0.1f);
+            else if (height < 0.3f) // Eau peu profonde
+                color = glm::mix(glm::vec3(0, 0, 1), glm::vec3(0, 0.7f, 1), (height - 0.1f) / 0.2f);
+            else if (height < 0.4f) // Plage
+                color = glm::mix(glm::vec3(0, 0.7f, 1), glm::vec3(1, 1, 0.5f), (height - 0.3f) / 0.1f);
+            else if (height < 0.6f) // Plaines
+                color = glm::mix(glm::vec3(0.5f, 0.8f, 0), glm::vec3(0.3f, 0.5f, 0), (height - 0.4f) / 0.2f);
+            else if (height < 0.75f) // Collines
+                color = glm::mix(glm::vec3(0.2f, 0.5f, 0.2f), glm::vec3(0.5f, 0.25f, 0.0f), (height - 0.6f) / 0.15f);
+            else if (height < 0.85f) // Montagnes
+                color = glm::mix(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.4f, 0.3f, 0.2f), (height - 0.75f) / 0.1f);
+            else if (height < 0.95f) // Sommets rocheux
+                color = glm::mix(glm::vec3(0.4f, 0.3f, 0.2f), glm::vec3(0.7f, 0.7f, 0.7f), (height - 0.85f) / 0.1f);
+            else // Sommets enneigés
+                color = glm::mix(glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1, 1, 1), (height - 0.95f) / 0.05f);
+
+            image.pixel(x, y) = color;
+        }
+    }
+
+    image.save("output/pouet.png");
+    image.save("output/DiamondSquareColored_" + std::to_string(size) + ".png");
 }
-
 
 int main()
 {
@@ -880,5 +1163,17 @@ int main()
         heightMap();
         sil::Image image{"output/pouet.png"};
     }*/
+    /*{
+        DiamondSquare();
+        sil::Image image{"output/pouet.png"};
+    }*/
+    /*{
+     DiamondSquareColor();
+     sil::Image image{"output/pouet.png"};
+    }*/
+    {
+        DiamondSquareColorRandom();
+        sil::Image image{"output/pouet.png"};
+    }
     return 0;
 }
