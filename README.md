@@ -2,8 +2,10 @@
 
 ## Description
 
-Ce projet vous apprend à implémenter des effets sur des images (similaires à ceux de Photoshop ou Instagram) en C++. Il s'agit d'une introduction à la synthèse d'image, parfaite pour pratiquer et approfondir vos compétences en C++.
+Ce projet nous apprend à implémenter des effets sur des images (similaires à ceux de Photoshop ou Instagram) en C++. Il s'agit d'une introduction à la synthèse d'image, parfaite pour pratiquer et approfondir vos compétences en C++.
+[Lien du workshop](https://dsmte.github.io/Learn--cpp_programming/Workshop/Exercices)
 
+    
 ## Objectifs
 
 - Découvrir les bases du traitement d'images.
