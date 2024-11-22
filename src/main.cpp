@@ -9,9 +9,9 @@
 #include <glm/gtx/matrix_transform_2d.hpp>
 #include <map>
 #include <limits>
-#include <vector>
 #include <random>
 #include <cmath>
+#include <array>
 sil::Image image{"images/logo.png"};
 // EXO1
 /*int green()
@@ -566,12 +566,8 @@ void Vortex()
     new_image.save("output/blur.png");
 }*/
 
-
-
-void kMeans()
-{
-    // Get image dimensions
-    sil::Image image{"images/photo.jpg"};
+/*void kMeans()
+{   sil::Image image{"images/photo.jpg"};
     int width = image.width();
     int height = image.height();
     int k = 16; // Définit le nombre de clusters
@@ -628,7 +624,6 @@ void kMeans()
             }
         }
     }
-
     // Assign new colors to pixels
     for (int x = 0; x < width; x++)
     {
@@ -651,9 +646,128 @@ void kMeans()
     }
 
     image.save("output/pouet.png");
-    image.save("output/kmeans.jpg");
+    image.save("output/kmeans/kmeans-16-colors.jpg");
+}*/
+
+/*void calculSecteur(sil::Image &image, std::vector<std::array<glm::vec3, 2>> &table, std::array<std::array<int, 2>, 2> &sector, int &x, int &y);
+
+void kurahara()
+{
+    sil::Image image{"images/photo.jpg"};
+    sil::Image voidImage{image.width(), image.height()};
+    int factor{3};
+
+    std::array<std::array<int, 2>, 2> secteur_1{std::array{0, factor}, std::array{0, factor}};
+    std::array<std::array<int, 2>, 2> secteur_2{std::array{0, factor}, std::array{0, -factor}};
+    std::array<std::array<int, 2>, 2> secteur_3{std::array{0, -factor}, std::array{0, -factor}};
+    std::array<std::array<int, 2>, 2> secteur_4{std::array{0, -factor}, std::array{0, factor}};
+
+    // Parcours de tous les pixels
+    for (int x{0}; x < image.width(); x++)
+    {
+        for (int y{0}; y < image.height(); y++)
+        {
+            std::vector<std::array<glm::vec3, 2>> varianceTable;
+
+            calculSecteur(image, varianceTable, secteur_1, x, y);
+            calculSecteur(image, varianceTable, secteur_2, x, y);
+            calculSecteur(image, varianceTable, secteur_3, x, y);
+            calculSecteur(image, varianceTable, secteur_4, x, y);
+
+            // On veut la variance la plus faible, ici à l'indice 0
+            std::sort(
+                varianceTable.begin(),
+                varianceTable.end(),
+                [](std::array<glm::vec3, 2> const &array1, std::array<glm::vec3, 2> const &array2)
+                {
+                    return glm::length(array1[1]) < glm::length(array2[1]);
+                });
+
+            voidImage.pixel(x, y) = varianceTable[0][0];
+        }
+    }
+
+    voidImage.save("output/pouet.png");
+    voidImage.save("output/kurahara.png");
 }
 
+glm::vec3 moyenneSecteur(sil::Image &image, std::array<std::array<int, 2>, 2> &secteur, int &x, int &y)
+{
+    int increase_i{1};
+    int increase_j{1};
+
+    // J'ajoute ou je retire ?
+    if (secteur[0][1] < 0)
+        increase_i = -1;
+    if (secteur[1][1] < 0)
+        increase_j = -1;
+
+    // On détermine la moyenne du secteur
+    glm::vec3 moyenne_secteur{0.f};
+    int count{0};
+    for (int i{secteur[0][0]}; i != secteur[0][1] + increase_i; i += increase_i)
+    {
+        for (int j{secteur[1][0]}; j != secteur[1][1] + increase_j; j += increase_j)
+        {
+            if (x + i >= 0 && x + i < image.width() && y + j >= 0 && y + j < image.height())
+            {
+                moyenne_secteur += image.pixel(x + i, y + j);
+                count++;
+            }
+        }
+    }
+    if (count > 0)
+    {
+        moyenne_secteur /= static_cast<float>(count);
+    }
+    return moyenne_secteur;
+}
+
+glm::vec3 varianceSecteur(sil::Image &image, std::array<std::array<int, 2>, 2> &secteur, int &x, int &y, glm::vec3 moyenne_secteur)
+{
+    int increase_i{1};
+    int increase_j{1};
+
+    // J'ajoute ou je retire ?
+    if (secteur[0][1] < 0)
+        increase_i = -1;
+    if (secteur[1][1] < 0)
+        increase_j = -1;
+
+    // On détermine la variance du secteur
+    glm::vec3 variance{0.f};
+    int count{0};
+    for (int i{secteur[0][0]}; i != secteur[0][1] + increase_i; i += increase_i)
+    {
+        for (int j{secteur[1][0]}; j != secteur[1][1] + increase_j; j += increase_j)
+        {
+            if (x + i >= 0 && x + i < image.width() && y + j >= 0 && y + j < image.height())
+            {
+                glm::vec3 pixel_value = image.pixel(x + i, y + j);
+                variance += (pixel_value - moyenne_secteur) * (pixel_value - moyenne_secteur);
+                count++;
+            }
+        }
+    }
+    if (count > 0)
+    {
+        variance /= static_cast<float>(count);
+    }
+    return glm::sqrt(variance);
+}
+
+void calculSecteur(sil::Image &image, std::vector<std::array<glm::vec3, 2>> &table, std::array<std::array<int, 2>, 2> &sector, int &x, int &y)
+{
+    glm::vec3 moyenne{moyenneSecteur(image, sector, x, y)};
+    table.push_back({moyenne, varianceSecteur(image, sector, x, y, moyenne)});
+}*/
+
+
+
+void DiamondSquare(){
+    
+
+}
 
 
 int main()
@@ -754,12 +868,12 @@ int main()
         blur();
         sil::Image image{"output/pouet.png"};
     }*/
-    {
+    /*{
         kMeans();
         sil::Image image{"output/pouet.png"};
-    }
+    }*/
     /*{
-        kuwahara();
+        kurahara();
         sil::Image image{"output/pouet.png"};
     }*/
     /*{
