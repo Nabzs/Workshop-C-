@@ -13,20 +13,18 @@
 #include <cmath>
 #include <array>
 sil::Image image{"images/logo.png"};
+
 // EXO1
-/*int green()
+/*void green()
 {
-    for (int x{0}; x < image.width(); ++x)
+    sil::Image ima{"images/logo.png"};
+    for (glm::vec3 &color : image.pixels())
     {
-        for (int y{0}; y < image.height(); ++y)
-        {
-            image.pixel(x, y).r = 0.f;
-            image.pixel(x, y).g = 1.f;
-            image.pixel(x, y).b = 0.f;
-        }
+        color.r = 0.f;
+        color.b = 0.f;
     }
+    image.save("output/green.png");
     image.save("output/pouet.png");
-    return 0;
 }*/
 
 // EXO2
@@ -1046,8 +1044,6 @@ void calculSecteur(sil::Image &image, std::vector<std::array<glm::vec3, 2>> &tab
     image.save("output/pouet.png");
     image.save("output/DiamondSquares/DiamondSquareColored_" + std::to_string(size) + ".png");
 }*/
-
-
 
 int main()
 {
