@@ -16,9 +16,9 @@ Ce projet vous apprend à implémenter des effets sur des images (similaires à 
 - Environnement de développement configuré avec CMake.
 - Librairie **sil** (incluse dans le template de projet).
 
-## Installation
+###Exercice 1###
 
-1. Clonez ce dépôt :
-   ```bash
-   git clone <votre-repo-url>
-   cd <votre-repo>
+###Exercice 2###
+###Exercice 3###
+###Exercice 4###
+###Exercice 5###

@@ -322,13 +322,13 @@ sil::Image image{"images/logo.png"};
 }*/
 
 /*void glitch(){
-    set_random_seed(5);
-    sil::Image image{"images/blackops.jpg"};
+    set_random_seed(15);
+    sil::Image image{"images/anonymous.jpg"};
 
-    int max_x{250};
+    int max_x{240};
     int max_y{35};
 
-    int iteration_glitch{50};
+    int iteration_glitch{20};
 
     for (int i = 0; i < iteration_glitch; i++)
     {
@@ -350,7 +350,7 @@ sil::Image image{"images/logo.png"};
     }
 
     image.save("output/pouet.png");
-    image.save("output/BO6/glitch8.png");
+    image.save("output/glitch effect/Anonymous_glitch5.png");
 }*/
 
 /*void colorDegrade(){
@@ -1048,10 +1048,11 @@ void DiamondSquareColorRandom()
             image.pixel(x, y) = color;
         }
     }
-
     image.save("output/pouet.png");
     image.save("output/DiamondSquareColored_" + std::to_string(size) + ".png");
 }
+
+
 
 int main()
 {
