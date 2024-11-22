@@ -940,17 +940,15 @@ void calculSecteur(sil::Image &image, std::vector<std::array<glm::vec3, 2>> &tab
     //image.save("output/DiamondSquareColored.png");
 }*/
 
-void DiamondSquareColorRandom()
+/*void DiamondSquareColorRandom()
 {
-    // Set a random seed based on current time
     set_random_seed(static_cast<int>(std::time(nullptr)));
 
-    int n = random_int(2, 20);
+    int n = random_int(2, 25);
     const int size = (1 << n) + 1;
 
     sil::Image image{size, size};
 
-    // Initialize the corners
     float roughness = 0.5f;
     image.pixel(0, 0) = glm::vec3(random_float(0.f, 1.f));
     image.pixel(0, size - 1) = glm::vec3(random_float(0.f, 1.f));
@@ -961,7 +959,6 @@ void DiamondSquareColorRandom()
     {
         int halfSide = sideLength / 2;
 
-        // Square step
         for (int x = halfSide; x < size; x += sideLength)
         {
             for (int y = halfSide; y < size; y += sideLength)
@@ -975,7 +972,6 @@ void DiamondSquareColorRandom()
             }
         }
 
-        // Diamond step
         for (int x = 0; x < size; x += halfSide)
         {
             for (int y = (x + halfSide) % sideLength; y < size; y += sideLength)
@@ -1010,7 +1006,6 @@ void DiamondSquareColorRandom()
         }
     }
 
-    // Normalize and apply color gradient
     float minVal = 1.0f, maxVal = 0.0f;
     for (int x = 0; x < size; x++)
     {
@@ -1049,8 +1044,8 @@ void DiamondSquareColorRandom()
         }
     }
     image.save("output/pouet.png");
-    image.save("output/DiamondSquareColored_" + std::to_string(size) + ".png");
-}
+    image.save("output/DiamondSquares/DiamondSquareColored_" + std::to_string(size) + ".png");
+}*/
 
 
 
@@ -1172,9 +1167,9 @@ int main()
      DiamondSquareColor();
      sil::Image image{"output/pouet.png"};
     }*/
-    {
+    /*{
         DiamondSquareColorRandom();
         sil::Image image{"output/pouet.png"};
-    }
+    }*/
     return 0;
 }
